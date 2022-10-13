@@ -1,7 +1,7 @@
 ﻿
 Console.WriteLine("Deferred validation example:");
 
-// validating without a always valid domain
+// validating without an always valid domain
 var p1 = new Person(0, 0, null);
 var notification = new NotificationValidationHandler();
 p1.Validate(notification);
