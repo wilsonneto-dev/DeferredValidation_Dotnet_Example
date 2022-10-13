@@ -1,7 +1,7 @@
 ﻿
 Console.WriteLine("Deferred validation example:");
 
-
+// validating without a always valid domain
 var p1 = new Person(0, 0, null);
 var notification = new NotificationValidationHandler();
 p1.Validate(notification);
@@ -9,7 +9,7 @@ p1.Validate(notification);
 if (notification.HasErrors())
     Console.WriteLine("Validation of p1 failed: {0}", string.Join(',', notification.GetErrors().Select(x => x.Message).ToList()));
 
-
+/// still without an always valid domain
 var p2 = new Person(0, 0, null);
 var exceptionHandler = new ExceptionValidationHandler();
 try
@@ -23,6 +23,7 @@ catch (Exception ex)
 
 Console.WriteLine("Deferred validation example with self contained validation");
 
+// lets see now in an always valid domain, the validate is within the class
 try
 {
     var c = new Car(0, null);
