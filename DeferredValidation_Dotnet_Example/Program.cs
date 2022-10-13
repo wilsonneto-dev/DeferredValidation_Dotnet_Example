@@ -52,6 +52,27 @@ public class Person
     public void Validate(ValidationHandler validationHandler) => (new PersonValidator(this, validationHandler)).Validate();
 }
 
+public class PersonValidator : Validator
+{
+    private readonly Person _person;
+
+    public PersonValidator(Person person, ValidationHandler handler) 
+        : base(handler) =>
+        _person = person;
+
+    public override void Validate()
+    {
+        if (_person.Id <= 0)
+            _handler.HandleError(new Error("Id must be greater than 0"));
+        
+        if (string.IsNullOrEmpty(_person.Name))
+            _handler.HandleError(new Error("Name is required"));
+
+        if (_person.Age <= 0)
+            _handler.HandleError(new Error("Age must be greater than 0"));
+    }
+}
+
 // example of deffered validation with self validation
 public class Car
 {
@@ -95,34 +116,16 @@ public class CarValidator : Validator
     }
 }
 
-public class PersonValidator : Validator
-{
-    private readonly Person _person;
-
-    public PersonValidator(Person person, ValidationHandler handler) 
-        : base(handler) =>
-        _person = person;
-
-    public override void Validate()
-    {
-        if (_person.Id <= 0)
-            _handler.HandleError(new Error("Id must be greater than 0"));
-        
-        if (string.IsNullOrEmpty(_person.Name))
-            _handler.HandleError(new Error("Name is required"));
-
-        if (_person.Age <= 0)
-            _handler.HandleError(new Error("Age must be greater than 0"));
-    }
-}
-
+// error base
 public record Error(string Message);
 
+// implementation of handle that throws exception on the first error
 public class ExceptionValidationHandler : ValidationHandler
 {
     public override void HandleError(Error error) => throw new Exception(error.Message);
 }
 
+// handle that will aggregate all the error
 public class NotificationValidationHandler : ValidationHandler
 {
     private readonly List<Error> _errors;
@@ -136,11 +139,13 @@ public class NotificationValidationHandler : ValidationHandler
     public override void HandleError(Error error) => _errors.Add(error);
 }
 
+// abstraction of the handler
 public abstract class ValidationHandler
 {
     public abstract void HandleError(Error error);
 }
 
+// abstraction of the validation
 public abstract class Validator
 {
     protected ValidationHandler _handler;
